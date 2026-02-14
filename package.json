@@ -4,7 +4,7 @@
   "description": "MCP server for PingKit — access feedback data from AI coding tools",
   "type": "module",
   "bin": {
-    "pingkit-mcp": "./dist/index.js"
+    "pingkit-mcp": "dist/index.js"
   },
   "main": "./dist/index.js",
   "files": [
