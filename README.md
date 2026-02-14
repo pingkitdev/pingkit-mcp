@@ -1,16 +1,60 @@
 # @pingkit/mcp
 
-MCP (Model Context Protocol) server for [PingKit](https://pingkit.dev) — access your in-app feedback data from AI coding tools like Claude Code, Cursor, Codex, and Windsurf.
+Let your AI coding tools read your user feedback.
 
-## Setup
+[![npm version](https://img.shields.io/npm/v/@pingkit/mcp)](https://www.npmjs.com/package/@pingkit/mcp)
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
+[![MCP](https://img.shields.io/badge/MCP-compatible-brightgreen)](https://modelcontextprotocol.io)
 
-### 1. Create a personal access token
+PingKit MCP is a [Model Context Protocol](https://modelcontextprotocol.io) server that connects your AI coding assistant to your [PingKit](https://pingkit.dev) user feedback. Ask your AI what users are complaining about, triage issues, and mark feedback resolved — without leaving your editor.
 
-Go to [Settings](https://pingkit.dev/settings) in the PingKit dashboard and create a personal access token.
+Works with Claude Code, Cursor, Codex, Windsurf, and any MCP-compatible client.
 
-### 2. Add to your MCP config
+<!-- TODO: Add demo GIF/screenshot of MCP in action -->
 
-Add the following to your `.mcp.json` (Claude Code, Cursor) or equivalent config:
+## Examples
+
+```
+You:  Show me unresolved feedback about the login screen
+
+  Found 3 unresolved items matching "login":
+
+  fb_8a2k [new] — "Login button doesn't respond on iPhone SE"
+                   v2.3.1 · iPhone SE · iOS 17.4
+
+  fb_7x9p [new] — "Face ID login fails after updating to v2.3.0"
+                   v2.3.0 · iPhone 15 Pro · iOS 18.1
+
+  fb_6m4n [acknowledged] — "Keep getting logged out every few hours"
+                            v2.2.9 · iPhone 14 · iOS 17.3
+```
+
+```
+You:  Acknowledge those first two and note that we're investigating
+
+  Acknowledged 2 items. Notes updated.
+```
+
+```
+You:  What are the top complaints in v2.3.0?
+
+  Analyzed 47 feedback items for v2.3.0:
+
+  1. Face ID authentication failures (12 reports)
+  2. Slow load times on app launch (8 reports)
+  3. Dark mode contrast issues (6 reports)
+  ...
+```
+
+## Quick start
+
+### 1. Get your token
+
+Create a personal access token at [pingkit.dev/settings](https://pingkit.dev/settings).
+
+### 2. Add to your MCP client
+
+Add this to your MCP configuration file:
 
 ```json
 {
@@ -19,49 +63,56 @@ Add the following to your `.mcp.json` (Claude Code, Cursor) or equivalent config
       "command": "npx",
       "args": ["-y", "@pingkit/mcp"],
       "env": {
-        "PINGKIT_TOKEN": "pt_your_token_here"
+        "PINGKIT_TOKEN": "pt_your_token"
       }
     }
   }
 }
 ```
 
-## Tools
+| Client | Config location |
+|--------|----------------|
+| Claude Code | `.mcp.json` in your project root |
+| Cursor | `.cursor/mcp.json` in your project root |
+| Windsurf | `~/.codeium/windsurf/mcp_config.json` |
+| Codex | Pass `--mcp-config path/to/mcp.json` |
 
-| Tool | Description |
-|------|-------------|
-| `list_feedback` | Search and filter feedback with pagination |
-| `get_feedback` | Get full details of a single feedback item |
-| `update_feedback` | Update status or add internal notes |
-| `bulk_feedback` | Perform bulk actions (acknowledge, archive, delete) |
-| `feedback_stats` | Get submission timeline and version breakdown |
-| `list_projects` | List all your projects |
-| `get_quota` | Check current usage and plan limits |
+### 3. Ask your AI a question
 
-## Prompts
+Try: *"Show me unresolved feedback"* — if you get results, you're all set.
 
-| Prompt | Description |
+## Available tools
+
+| Tool | Description | Try asking |
+|------|-------------|------------|
+| `list_feedback` | Search and filter feedback with pagination | "Show new feedback from this week" |
+| `get_feedback` | Get full details of a single item | "Show me details on fb_8a2k" |
+| `update_feedback` | Update status or add internal notes | "Mark fb_8a2k as resolved" |
+| `bulk_feedback` | Bulk acknowledge, archive, or delete | "Archive all resolved feedback" |
+| `feedback_stats` | Submission timeline and version breakdown | "How many reports came in this month?" |
+| `list_projects` | List all your PingKit projects | "Which projects do I have?" |
+| `get_quota` | Check usage and plan limits | "Am I near my feedback quota?" |
+
+### Built-in prompts
+
+| Prompt | What it does |
 |--------|-------------|
 | `triage` | Review unresolved feedback and suggest priorities |
 | `release_review` | Summarize feedback for a specific app version |
-| `trends` | Analyze feedback trends over time |
+| `trends` | Analyze feedback patterns over time |
 
-## Example usage
+## Requirements
 
-Once configured, ask your AI assistant natural language questions:
+- Node.js 18+
+- A [PingKit](https://pingkit.dev) account with a personal access token
 
-- "Show me unresolved feedback about the login screen"
-- "What are users saying about v2.3.0?"
-- "Acknowledge all feedback about dark mode"
-- "What are the trends in feedback this month?"
+## Links
 
-## Environment variables
-
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `PINGKIT_TOKEN` | Yes | Personal access token from dashboard |
-| `PINGKIT_URL` | No | API base URL (defaults to `https://pingkit.dev`) |
+- [PingKit](https://pingkit.dev) — website and dashboard
+- [PingKit iOS SDK](https://github.com/pingkitdev/pingkit-swift) — the companion SDK for your app
+- [Documentation](https://pingkit.dev/docs)
+- [MCP specification](https://modelcontextprotocol.io)
 
 ## License
 
-MIT
+[Apache-2.0](LICENSE)
