@@ -79,7 +79,9 @@ describe("get_feedback", () => {
     const result = await callTool("get_feedback", { id: "fb_test123" });
     const text = getTextContent(result);
 
-    expect(text).toContain("fb_test123 [new]");
+    expect(text).toContain('[new] "The app crashes when I tap the settings icon"');
+    expect(text).toContain("ID");
+    expect(text).toContain("fb_test123");
     expect(text).toContain("App Version");
     expect(text).toContain("2.0.0");
   });

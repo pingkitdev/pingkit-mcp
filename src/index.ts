@@ -18,29 +18,30 @@ export function formatFeedbackList(
   if (meta.offset > 0) text += ` (offset ${meta.offset})`;
   text += "\n";
 
-  for (const item of items) {
-    text += `\n─── ${item.id} [${item.status}]`;
-    if (item.type) text += ` (${item.type})`;
-    text += ` ───\n`;
-    text += `  "${item.text}"\n`;
+  for (let i = 0; i < items.length; i++) {
+    const item = items[i];
+    text += `\n${i + 1}. [${item.status}]`;
+    if (item.type) text += ` ${item.type}`;
+    text += ` "${item.text}"\n`;
     const parts: string[] = [];
     if (item.app_version) parts.push(`v${item.app_version}`);
     if (item.device_model) parts.push(item.device_model);
     if (item.os_version) parts.push(`iOS ${item.os_version}`);
     if (item.source) parts.push(`source: ${item.source}`);
-    if (parts.length > 0) text += `  ${parts.join(" · ")}\n`;
-    if (item.email) text += `  Email: ${item.email}\n`;
-    if (item.notes) text += `  Notes: ${item.notes.length > 80 ? item.notes.slice(0, 80) + "…" : item.notes}\n`;
-    text += `  Created: ${item.created_at}\n`;
+    if (parts.length > 0) text += `   ${parts.join(" · ")}\n`;
+    if (item.email) text += `   Email: ${item.email}\n`;
+    if (item.notes) text += `   Notes: ${item.notes.length > 80 ? item.notes.slice(0, 80) + "…" : item.notes}\n`;
+    text += `   Created: ${item.created_at.split("T")[0]}\n`;
+    text += `   ID: ${item.id}\n`;
   }
   return text;
 }
 
 export function formatFeedbackDetail(item: FeedbackItem): string {
-  let text = `${item.id} [${item.status}]\n\n`;
-  text += `  "${item.text}"\n\n`;
+  let text = `[${item.status}] "${item.text}"\n\n`;
 
   const fields: [string, string][] = [
+    ["ID", item.id],
     ["Project", item.project_id],
     ["Status", item.status],
   ];
@@ -56,8 +57,8 @@ export function formatFeedbackDetail(item: FeedbackItem): string {
   if (item.locale) fields.push(["Locale", item.locale]);
   if (item.timezone) fields.push(["Timezone", item.timezone]);
   fields.push(["Has Image", item.has_image ? "Yes" : "No"]);
-  fields.push(["Created", item.created_at]);
-  fields.push(["Updated", item.updated_at]);
+  fields.push(["Created", item.created_at.split("T")[0]]);
+  fields.push(["Updated", item.updated_at.split("T")[0]]);
 
   const maxLabel = Math.max(...fields.map(([k]) => k.length));
   for (const [key, value] of fields) {

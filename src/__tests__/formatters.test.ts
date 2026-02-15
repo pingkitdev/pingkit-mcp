@@ -14,13 +14,16 @@ describe("formatFeedbackList", () => {
     const result = formatFeedbackList([item], meta);
 
     expect(result).toContain("Showing 1 of 1 items");
-    expect(result).toContain(item.id);
+    expect(result).toContain(`ID: ${item.id}`);
     expect(result).toContain(`[${item.status}]`);
     expect(result).toContain(`"${item.text}"`);
-    expect(result).toContain(`Created: ${item.created_at}`);
+    expect(result).toContain("Created: 2025-01-15");
+    expect(result).not.toContain("T10:30:00Z");
     // Should not contain metadata lines since all optional fields are null
     expect(result).not.toContain("Email:");
     expect(result).not.toContain("Notes:");
+    // Should start with numbered item
+    expect(result).toContain("1. [new]");
   });
 
   it("renders item with all metadata populated", () => {
@@ -79,12 +82,12 @@ describe("formatFeedbackList", () => {
     expect(result).not.toContain("offset");
   });
 
-  it("shows type in separator when present", () => {
+  it("shows type inline when present", () => {
     const item = makeFeedbackItem({ type: "bug" });
     const meta = makePaginationMeta({ total: 1, count: 1 });
     const result = formatFeedbackList([item], meta);
 
-    expect(result).toContain("(bug)");
+    expect(result).toContain("[new] bug");
   });
 });
 
@@ -93,15 +96,19 @@ describe("formatFeedbackDetail", () => {
     const item = makeFeedbackItem();
     const result = formatFeedbackDetail(item);
 
-    expect(result).toContain(`${item.id} [${item.status}]`);
-    expect(result).toContain(`"${item.text}"`);
+    expect(result).toContain(`[${item.status}] "${item.text}"`);
+    expect(result).toContain(`ID`);
+    expect(result).toContain(item.id);
     expect(result).toContain("Project");
     expect(result).toContain(item.project_id);
     expect(result).toContain("Status");
     expect(result).toContain("Has Image");
     expect(result).toContain("No"); // has_image: 0
     expect(result).toContain("Created");
+    expect(result).toContain("2025-01-15");
     expect(result).toContain("Updated");
+    // Timestamps should be date-only
+    expect(result).not.toContain("T10:30:00Z");
   });
 
   it("renders app_version without app_build as version only", () => {
