@@ -51,6 +51,8 @@ export class PingKitClient {
     search?: string;
     project_id?: string;
     app_version?: string;
+    type?: string;
+    sort?: string;
     created_from?: string;
     created_to?: string;
     limit?: number;
@@ -61,6 +63,8 @@ export class PingKitClient {
     if (params?.search) query.set("search", params.search);
     if (params?.project_id) query.set("project_id", params.project_id);
     if (params?.app_version) query.set("app_version", params.app_version);
+    if (params?.type) query.set("type", params.type);
+    if (params?.sort) query.set("sort", params.sort);
     if (params?.created_from) query.set("created_from", params.created_from);
     if (params?.created_to) query.set("created_to", params.created_to);
     if (params?.limit) query.set("limit", params.limit.toString());
@@ -113,6 +117,31 @@ export class PingKitClient {
     }>(`/v1/feedback/stats${qs ? `?${qs}` : ""}`);
   }
 
+  async getFeedbackImage(id: string) {
+    const response = await fetch(`${this.baseUrl}/v1/feedback/${encodeURIComponent(id)}/image`, {
+      headers: {
+        Authorization: `Bearer ${this.token}`,
+      },
+    });
+
+    if (!response.ok) {
+      let message = `HTTP ${response.status}`;
+      try {
+        const body = (await response.json()) as {
+          error?: { message?: string };
+        };
+        if (body?.error?.message) message = body.error.message;
+      } catch {
+        // ignore
+      }
+      throw new Error(message);
+    }
+
+    const contentType = response.headers.get("content-type") ?? "image/png";
+    const buffer = await response.arrayBuffer();
+    return { data: Buffer.from(buffer).toString("base64"), contentType };
+  }
+
   async listProjects() {
     return this.request<{ data: Project[] }>("/v1/projects");
   }
@@ -132,6 +161,9 @@ export interface FeedbackItem {
   project_id: string;
   text: string;
   status: "new" | "acknowledged" | "resolved" | "archived";
+  email: string | null;
+  type: string | null;
+  source: string | null;
   device_model: string | null;
   os_version: string | null;
   app_version: string | null;
